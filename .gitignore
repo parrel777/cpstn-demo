@@ -15,4 +15,3 @@ node_modules/
 # 기타
 *.log
 .DS_Store
-generated_images/

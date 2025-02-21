@@ -58,8 +58,8 @@ async def generate_image(request: GenerateRequest):
     ).images[0]
 
     os.makedirs("generated_images", exist_ok=True)
-    filename = f"{uuid.uuid4()}.png"
+    filename = f"{uuid.uuid4()}.jpg"
     image_path = os.path.join("generated_images", filename)
     image.save(image_path)
 
-    return FileResponse(image_path, media_type="image/png")
+    return FileResponse(image_path, media_type="image/jpg")
