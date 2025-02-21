@@ -3,7 +3,7 @@
 
 ============
 
-cd frontend
+cd frontend  
 npm install
 
 ============
