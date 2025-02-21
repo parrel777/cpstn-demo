@@ -27,16 +27,16 @@ export default function ImageGenerator() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 flex flex-col items-center justify-start min-h-screen">
       <h1 className="text-2xl font-bold">한국어로 이미지생성 (한복 LoRA)</h1>
       <input
         type="text"
         placeholder="프롬프트 입력"
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        className="border p-2 my-2 w-full"
+        className="border p-2 my-2 w-full w-96"
       />
-      <div className="my-2">
+      <div className="my-2 w-96">
         <label>Steps: {steps}</label>
         <input
           type="range"
@@ -46,7 +46,7 @@ export default function ImageGenerator() {
           onChange={(e) => setSteps(e.target.value)}
         />
       </div>
-      <div className="my-2">
+      <div className="my-2 w-96">
         <label>Guidance Scale: {guidanceScale}</label>
         <input
           type="range"
@@ -59,12 +59,12 @@ export default function ImageGenerator() {
       </div>
       <button
         onClick={generateImage}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="bg-blue-500 text-white px-4 py-2 rounded w-96"
       >
         {loading ? '이미지 생성 중...' : '이미지 생성'}
       </button>
       {image && (
-        <div className="my-4">
+        <div className="my-4 w-96">
           <h2 className="text-xl font-bold">결과 이미지</h2>
           <img src={image} alt="생성된 이미지" className="border" />
         </div>
