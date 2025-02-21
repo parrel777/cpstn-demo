@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# Node.js
+node_modules/
+
+# 환경 변수 파일
+.env
+
+# 기타
+*.log
+.DS_Store
+generated_images/
