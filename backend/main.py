@@ -13,16 +13,16 @@ load_dotenv()
 
 app = FastAPI()
 
-# CORS 설정 (프론트엔드와 통신 허용)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 배포 시 프론트엔드 도메인으로 변경
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-model_path = 'parrel777/hanbok-LoRA-ver2' # LoRA
+hanbok = 'parrel777/hanbok-LoRA-ver2' 
+hanok = 'parrel777/hanok-LoRA-ver1' 
 base_model = 'Bingsu/my-korean-stable-diffusion-v1-5'
 
 pipe = DiffusionPipeline.from_pretrained(
@@ -31,10 +31,19 @@ pipe = DiffusionPipeline.from_pretrained(
 )
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.scheduler.use_karras_sigmas = True
-pipe.load_lora_weights(model_path)
+pipe.unet.load_attn_procs(hanbok)
+pipe.unet.load_attn_procs(hanok)
 pipe.to("cuda")
 
-# 입력 데이터 모델 정의
+quality_prompt ="""최고 화질, 초고해상도, 정밀한 묘사, 영화 같은 조명, 섬세한 디테일, 명작, 
+선명한 얼굴, 자세한 얼굴, 자연스러운 피부 질감, 또렷한 눈동자, 균형 잡힌 얼굴, 아름다운 눈, 고해상도 피부, 자연스러운 눈
+"""
+
+# 부정 프롬프트
+negative_prompt = """못생긴, 흐릿한, 저화질, 비현실적인, 얼굴 왜곡, 이상한 눈, 부자연스러운 피부, 
+비정상적인 손가락, 기괴한 자세, 왜곡된 신체, 불명확한 배경, 다중 얼굴, 
+과도한 장신구, 글씨 존재, 잘린 얼굴, 분할된, 텍스트, 글자, 글자가 있는, 텍스트 포함, 이상한 글자, 텍스트 왜곡"""
+
 class GenerateRequest(BaseModel):
     prompt: str
     steps: int = 25
@@ -42,7 +51,8 @@ class GenerateRequest(BaseModel):
 
 @app.post("/generate")
 async def generate_image(request: GenerateRequest):
-    prompt = request.prompt
+    final_prompt = f"{request.prompt}, {quality_prompt}"
+    prompt = final_prompt
     steps = request.steps
     guidance_scale = request.guidance_scale
 
@@ -53,6 +63,7 @@ async def generate_image(request: GenerateRequest):
         prompt, 
         num_inference_steps=steps, 
         guidance_scale=guidance_scale,
+        negative_prompt=negative_prompt,
         height=512,
         width=512,
     ).images[0]
