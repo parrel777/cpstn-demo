@@ -51,7 +51,7 @@ async def generate_image(request: GenerateRequest):
         return {"error": "프롬프트를 입력하세요."}
 
     image = pipe(
-        prompt, 
+        final_prompt, 
         num_inference_steps=steps, 
         guidance_scale=guidance_scale,
         height=512,
