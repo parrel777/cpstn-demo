@@ -32,29 +32,41 @@ pipe = DiffusionPipeline.from_pretrained(
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.scheduler.use_karras_sigmas = True
 pipe.unet.load_attn_procs(hanbok)
-pipe.unet.load_attn_procs(hanok)
+# pipe.unet.load_attn_procs(hanok)
 pipe.to("cuda")
 
+# 타입 지정
 class GenerateRequest(BaseModel):
     prompt: str
-    steps: int = 25
-    guidance_scale: float = 7.5
+    steps: int = 30
+    guidance_scale: float = 12
 
 @app.post("/generate")
 async def generate_image(request: GenerateRequest):
-    final_prompt = prompt
-    prompt = final_prompt
+    user_prompt = request.prompt
+
+    quality_prompt ="""최고 화질, 초고해상도, 정밀한 묘사, 영화 같은 조명, 섬세한 디테일, 명작, 
+    선명한 얼굴, 자세한 얼굴, 자연스러운 피부 질감, 또렷한 눈동자, 균형 잡힌 얼굴, 아름다운 눈, 고해상도 피부
+    """
+
+    negative_prompt = """못생긴, 흐릿한, 저화질, 비현실적인, 얼굴 왜곡, 이상한 눈, 부자연스러운 피부, 
+    비정상적인 손가락, 기괴한 자세, 왜곡된 신체, 불명확한 배경, 다중 얼굴, 
+    과도한 장신구, 글씨 존재, 잘린 얼굴, 분할된
+    """
+
+    final_prompt = f"{user_prompt}, {quality_prompt}"
     steps = request.steps
     guidance_scale = request.guidance_scale
 
-    if not prompt:
+    if not final_prompt:
         return {"error": "프롬프트를 입력하세요."}
 
     image = pipe(
         final_prompt, 
+        negative_prompt=negative_prompt,
         num_inference_steps=steps, 
         guidance_scale=guidance_scale,
-        height=512,
+        height=768,
         width=512,
     ).images[0]
 
